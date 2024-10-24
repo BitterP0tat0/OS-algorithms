@@ -11,25 +11,26 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class Algorithms {
-    static List<Parameters> processes = new ArrayList<>();
+    List<Parameters> processes = new ArrayList<>();
     Random random = new Random();
 
     public void generateProcesses(int numProcesses) {
         // add a hashmap for not having same times
         Set<Integer> arrivalTimes = new HashSet<>();
-
+        int priority;
         for (int i = 1; i <= numProcesses; i++) {
             String processId;
             int arrivalTime;
             // for only arrival time
             do {
                 arrivalTime = random.nextInt(20); // get nums between 20
+                priority = random.nextInt(3);
             } while (arrivalTimes.contains(arrivalTime)); // if already exist the number
 
             arrivalTimes.add(arrivalTime); // add
             int burstTime = 1 + random.nextInt(10); // generate burst time
             processId = "p" + (arrivalTime + 1);// make sure the id is from smaller to biger
-            Parameters process = new Parameters(processId, arrivalTime, burstTime);
+            Parameters process = new Parameters(processId, arrivalTime, burstTime, priority);
             processes.add(process);
         }
     }
@@ -115,9 +116,56 @@ public class Algorithms {
     // For RR
 
     public void calculateMetricsRR(int timeQuantum) {
+        int totalTurnaroundTime = 0;
+        int totalWaitingTime = 0;
 
+        int completedProcesses = 0;
+        int currentTime = 0;
+        // Create a list for time
+        int[] remainingBurstTime = new int[processes.size()];
+        for (int i = 0; i < processes.size(); i++) {
+            remainingBurstTime[i] = processes.get(i).getBurstTime();
+        }
+
+        boolean allProcessesCompleted = false;
+
+        while (!allProcessesCompleted) {
+            allProcessesCompleted = true;
+
+            for (int i = 0; i < processes.size(); i++) {
+                Parameters process = processes.get(i);
+
+                if (remainingBurstTime[i] > 0) {
+                    allProcessesCompleted = false;
+
+                    if (currentTime < process.getArrivalTime()) {
+                        currentTime = process.getArrivalTime();
+                    }
+
+                    if (remainingBurstTime[i] > timeQuantum) {
+                        currentTime += timeQuantum;
+                        remainingBurstTime[i] -= timeQuantum;
+                    } else {
+                        currentTime += remainingBurstTime[i];
+                        remainingBurstTime[i] = 0;
+                        process.setCompletionTime(currentTime);
+
+                        totalTurnaroundTime += process.getTurnaroundTime();
+                        totalWaitingTime += process.getWaitingTime();
+
+                        completedProcesses++;
+                    }
+                }
+            }
+        }
+
+        double averageTurnaroundTime = (double) totalTurnaroundTime / completedProcesses;
+        double averageWaitingTime = (double) totalWaitingTime / completedProcesses;
+        System.out.printf("RR Average Turnaround Time: %.2f ms%n", averageTurnaroundTime);
+        System.out.printf("RR Average Waiting Time: %.2f ms%n", averageWaitingTime);
     }
 
+    // calculateMetricsNonPreemptivePriority
     public void calculateMetricsNonPreemptivePriority() {
 
         int currentTime = 0;
@@ -150,12 +198,12 @@ public class Algorithms {
         System.out.printf("Non-Preemptive Priority Average Waiting Time: %.2f ms%n", averageWaitingTime);
     }
 
-    // Multilevel Queue Scheduling(需要添加优先级)
     public void calculateMetricsMultilevelQueue() {
         Queue<Parameters> highPriorityQueue = new LinkedList<>();
         Queue<Parameters> mediumPriorityQueue = new LinkedList<>();
         Queue<Parameters> lowPriorityQueue = new LinkedList<>();
 
+        // 将进程按优先级分配到不同的队列中
         for (Parameters process : processes) {
             if (process.getPriority() == 0) {
                 highPriorityQueue.add(process); // superior
@@ -168,7 +216,7 @@ public class Algorithms {
 
         int currentTime = 0;
         int completedProcesses = 0;
-        int timeQuantum = 2;
+        int timeQuantum = 1;
         while (!highPriorityQueue.isEmpty()) {
             Parameters process = highPriorityQueue.poll();
             if (process.getBurstTime() > timeQuantum) {
@@ -203,6 +251,7 @@ public class Algorithms {
             completedProcesses++;
         }
 
+        // 计算平均周转时间和平均等待时间
         double totalTurnaroundTime = 0;
         double totalWaitingTime = 0;
 

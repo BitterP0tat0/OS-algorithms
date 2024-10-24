@@ -9,12 +9,12 @@ public class Parameters {
     private int waitingTime;
     private int priority;
 
-    public Parameters(String processId, int arrivalTime, int burstTime) {
+    public Parameters(String processId, int arrivalTime, int burstTime, int priority) {
 
         this.processId = processId;
         this.arrivalTime = arrivalTime;
         this.burstTime = burstTime;
-
+        this.priority = priority;
     }
 
     public String getProcessId() {
@@ -50,7 +50,8 @@ public class Parameters {
 
     @Override
     public String toString() {
-        return " [process " + processId + ", arrivalTime=" + arrivalTime + ", burstTime=" + burstTime + "]";
+        return " [process " + processId + ", arrivalTime=" + arrivalTime + ", burstTime=" + burstTime
+                + " Priority number " + priority + "]";
     }
 
     public void setBurstTime(int burstTime) {

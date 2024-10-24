@@ -6,13 +6,12 @@ public class Test {
         Algorithms algorithms = new Algorithms();
         algorithms.generateProcesses(20);
         algorithms.sortArrivalTime();
-
         algorithms.printProcesses();
         algorithms.calculateMetricsFCFS();
         algorithms.calculateMetricsSJF();
+        algorithms.calculateMetricsRR(10);
         algorithms.calculateMetricsNonPreemptivePriority();
         algorithms.calculateMetricsMultilevelQueue();
-        algorithms.calculateMetricsRR(50);
 
     }
 }
