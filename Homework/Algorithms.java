@@ -62,16 +62,27 @@ public class Algorithms {
 
         double averageTurnaroundTime = (double) totalTurnaroundTime / completedProcesses;
         double averageWaitingTime = (double) totalWaitingTime / completedProcesses;
+
+        // CPU Utilization
+        int totalBurstTime = 0;
+        for (Parameters process : processes) {
+            totalBurstTime += process.getBurstTime();
+        }
+        double CPU_utilization = (double) totalBurstTime / currentTime * 100;
+
+        // Throughput
+        double throughput = (double) completedProcesses / currentTime;
+
         System.out.printf("FCFS Average Turnaround Time: %.2f ms%n", averageTurnaroundTime);
         System.out.printf("FCFS Average Waiting Time: %.2f ms%n", averageWaitingTime);
-
+        System.out.printf("FCFS CPU Utilization: %.2f%%%n", CPU_utilization);
+        System.out.printf("FCFS Throughput: %.2f processes/unit time%n", throughput);
     }
 
     // For SJF
     public void calculateMetricsSJF() {
         int totalTurnaroundTime = 0;
         int totalWaitingTime = 0;
-
         int completedProcesses = 0;
         int currentTime = 0;
 
@@ -105,19 +116,29 @@ public class Algorithms {
             completedProcesses++;
             readyQueue.remove(currentProcess); // Remove the completed process
         }
-
         double averageTurnaroundTime = (double) totalTurnaroundTime / completedProcesses;
         double averageWaitingTime = (double) totalWaitingTime / completedProcesses;
+        // CPU Utilization
+        int totalBurstTime = 0;
+        for (Parameters process : processes) {
+            totalBurstTime += process.getBurstTime();
+        }
+        double CPU_utilization = (double) totalBurstTime / currentTime * 100;
+
+        // Throughput
+        double throughput = (double) completedProcesses / currentTime;
 
         System.out.printf("SJF Average Turnaround Time: %.2f ms%n", averageTurnaroundTime);
         System.out.printf("SJF Average Waiting Time: %.2f ms%n", averageWaitingTime);
+        System.out.printf("SJF CPU Utilization: %.2f%%%n", CPU_utilization);
+        System.out.printf("SJF Throughput: %.2f processes/unit time%n", throughput);
     }
-
     // For RR
 
     public void calculateMetricsRR(int timeQuantum) {
         int totalTurnaroundTime = 0;
         int totalWaitingTime = 0;
+        int totalBurstTime = 0;
 
         int completedProcesses = 0;
         int currentTime = 0;
@@ -161,8 +182,19 @@ public class Algorithms {
 
         double averageTurnaroundTime = (double) totalTurnaroundTime / completedProcesses;
         double averageWaitingTime = (double) totalWaitingTime / completedProcesses;
+        // CPU Utilization
+        for (Parameters process : processes) {
+            totalBurstTime += process.getBurstTime();
+        }
+        double CPU_utilization = (double) totalBurstTime / currentTime * 100;
+
+        // Throughput
+        double throughput = (double) completedProcesses / currentTime;
+
         System.out.printf("RR Average Turnaround Time: %.2f ms%n", averageTurnaroundTime);
         System.out.printf("RR Average Waiting Time: %.2f ms%n", averageWaitingTime);
+        System.out.printf("RR CPU Utilization: %.2f%%%n", CPU_utilization);
+        System.out.printf("RR Throughput: %.2f processes/unit time%n", throughput);
     }
 
     // calculateMetricsNonPreemptivePriority
@@ -171,6 +203,7 @@ public class Algorithms {
         int currentTime = 0;
         double totalTurnaroundTime = 0;
         double totalWaitingTime = 0;
+        int completedProcesses = 0;
 
         processes.sort(Comparator.comparingInt(Parameters::getPriority));
 
@@ -190,12 +223,25 @@ public class Algorithms {
             currentTime += process.getBurstTime();
             totalTurnaroundTime += turnaroundTime;
             totalWaitingTime += waitingTime;
+            completedProcesses++;
         }
 
         double averageTurnaroundTime = totalTurnaroundTime / processes.size();
         double averageWaitingTime = totalWaitingTime / processes.size();
-        System.out.printf("Non-Preemptive Priority Average Turnaround Time: %.2f ms%n", averageTurnaroundTime);
-        System.out.printf("Non-Preemptive Priority Average Waiting Time: %.2f ms%n", averageWaitingTime);
+        // CPU Utilization
+        int totalBurstTime = 0;
+        for (Parameters process : processes) {
+            totalBurstTime += process.getBurstTime();
+        }
+        double CPU_utilization = (double) totalBurstTime / currentTime * 100;
+
+        // Throughput
+        double throughput = (double) completedProcesses / currentTime;
+
+        System.out.printf("NonPreemptivePriority Average Turnaround Time: %.2f ms%n", averageTurnaroundTime);
+        System.out.printf("NonPreemptivePriority Average Waiting Time: %.2f ms%n", averageWaitingTime);
+        System.out.printf("NonPreemptivePriority CPU Utilization: %.2f%%%n", CPU_utilization);
+        System.out.printf("NonPreemptivePriority Throughput: %.2f processes/unit time%n", throughput);
     }
 
     public void calculateMetricsMultilevelQueue() {
@@ -203,7 +249,6 @@ public class Algorithms {
         Queue<Parameters> mediumPriorityQueue = new LinkedList<>();
         Queue<Parameters> lowPriorityQueue = new LinkedList<>();
 
-        // 将进程按优先级分配到不同的队列中
         for (Parameters process : processes) {
             if (process.getPriority() == 0) {
                 highPriorityQueue.add(process); // superior
@@ -251,7 +296,6 @@ public class Algorithms {
             completedProcesses++;
         }
 
-        // 计算平均周转时间和平均等待时间
         double totalTurnaroundTime = 0;
         double totalWaitingTime = 0;
 
@@ -263,8 +307,20 @@ public class Algorithms {
         double averageTurnaroundTime = totalTurnaroundTime / completedProcesses;
         double averageWaitingTime = totalWaitingTime / completedProcesses;
 
-        System.out.printf("calculateMetricsMultilevelQueue Average Turnaround Time: %.4f ms%n", averageTurnaroundTime);
-        System.out.printf("calculateMetricsMultilevelQueue Average Waiting Time: %.4f ms%n", averageWaitingTime);
+        // CPU Utilization
+        int totalBurstTime = 0;
+        for (Parameters process : processes) {
+            totalBurstTime += process.getBurstTime();
+        }
+        double CPU_utilization = (double) totalBurstTime / currentTime * 100;
+
+        // Throughput
+        double throughput = (double) completedProcesses / currentTime;
+
+        System.out.printf("MultilevelQueue Average Turnaround Time: %.2f ms%n", averageTurnaroundTime);
+        System.out.printf("MultilevelQueue Average Waiting Time: %.2f ms%n", averageWaitingTime);
+        System.out.printf("MultilevelQueue CPU Utilization: %.2f%%%n", CPU_utilization);
+        System.out.printf("MultilevelQueue Throughput: %.2f processes/unit time%n", throughput);
     }
 
     public void sortArrivalTime() {
